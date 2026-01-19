@@ -1,7 +1,7 @@
 {
-    "name": "학원 찾기",
-    "short_name": "학원찾기",
-    "description": "하남시 학원 검색 및 정보 조회 서비스",
+    "name": "교습소 찾기",
+    "short_name": "교습소 찾기",
+    "description": "하남시 교습소 검색 및 정보 조회 서비스",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",

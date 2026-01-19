@@ -496,11 +496,22 @@ export default function DetailView({ academy, allAcademies = [], onBack, onSelec
                                                 }}>
                                                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         <span>📐</span>
-                                                        <span>(총면적) {formatNumber(a.facilities?.totalArea)}㎡ (전용면적) {formatNumber(a.facilities?.dedicatedArea)}㎡</span>
+                                                        <span>(총면적) {formatNumber(a.facilities?.totalArea)}㎡</span>
                                                     </span>
                                                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                         <span>📅</span>
                                                         <span>{a.regDate}</span>
+                                                        <span style={{
+                                                            fontSize: '0.75rem',
+                                                            padding: '2px 6px',
+                                                            borderRadius: '4px',
+                                                            fontWeight: '600',
+                                                            backgroundColor: a.status?.includes('개원') ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                                                            color: a.status?.includes('개원') ? '#059669' : '#dc2626',
+                                                            marginLeft: '4px'
+                                                        }}>
+                                                            {a.status || '-'}
+                                                        </span>
                                                     </span>
                                                 </div>
                                             </div>

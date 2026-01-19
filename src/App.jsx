@@ -372,7 +372,7 @@ function App() {
           </button>
         </div>
 
-        <p className="subtitle">검색할 교습소명, 신고번호, 주소, 교습자명을 입력하세요</p>
+        <p className="subtitle">검색할 교습소명, 주소, 교습자명을 입력하세요</p>
 
         <form className="search-bar" onSubmit={handleSearchSubmit}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="search-icon">
@@ -381,7 +381,7 @@ function App() {
           </svg>
           <input
             type="text"
-            placeholder="교습소명, 신고번호, 주소, 교습자명..."
+            placeholder="교습소명, 주소, 교습자명..."
             value={searchQuery}
             onChange={handleInputChange}
             onFocus={() => searchQuery && setShowSuggestions(true)}

@@ -5,7 +5,7 @@ export const PASSWORD_GID = '1813814045';
 
 // ⚠️ 데이터 업데이트 시 아래 날짜를 변경하세요
 // 형식: "YYYY. M. DD. (요일) 기준" (예: "2026. 1. 16. (금) 기준")
-export const DATA_AS_OF = '2026. 1. 19. (일) 기준';
+export const DATA_AS_OF = '2026. 1. 19. (월) 기준';
 
 
 export async function fetchGoogleSheetData(gid) {

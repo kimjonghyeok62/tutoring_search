@@ -18,13 +18,8 @@ function App() {
   const [dataAsOf, setDataAsOf] = useState(''); // 데이터 기준일
   const [showLegalResources, setShowLegalResources] = useState(false); // 법령 자료 표시 여부
 
-  // Check auth on mount
-  useEffect(() => {
-    const cachedAuth = localStorage.getItem('academy_auth');
-    if (cachedAuth === 'true') {
-      setIsAuthenticated(true);
-    }
-  }, []);
+  // Memory-based authentication only - no localStorage
+  // On page refresh, user will always see login screen
 
   // Fetch data when authenticated
   useEffect(() => {
@@ -53,13 +48,13 @@ function App() {
 
   const handleLogin = () => {
     setIsAuthenticated(true);
-    localStorage.setItem('academy_auth', 'true');
+    // No localStorage - memory-based only
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
-    localStorage.removeItem('academy_auth');
     setAcademies([]);
+    // No localStorage - memory-based only
   };
 
   // Search/Filter Logic with Priority

@@ -27,17 +27,48 @@ export async function fetchGoogleSheetData(gid) {
 // 데이터 기준일 반환 - 구글 시트 제목에서 자동으로 가져옴
 export async function fetchSheetName() {
     try {
-        // Google Sheets API를 사용하여 제목 가져오기
-        const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}?fields=properties.title&key=AIzaSyDummy`;
+        // Google Sheets HTML 페이지에서 제목 추출
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
+        const response = await fetch(url);
+        const html = await response.text();
 
-        // CORS 문제로 인해 직접 fetch가 어려울 수 있으므로 폴백 사용
-        // 실제로는 시트 제목을 수동으로 업데이트하는 것이 더 안정적입니다
-        console.log('Using fallback date from DATA_AS_OF constant');
+        // HTML에서 제목 추출 (예: "교습소 조회 자료 (2026.01.22. 기준)")
+        const titleMatch = html.match(/<title>([^<]+)<\/title>/);
+        if (titleMatch && titleMatch[1]) {
+            const title = titleMatch[1];
+            console.log('Sheet title:', title);
+
+            // 제목에서 날짜 패턴 추출
+            // 패턴 1: "2026.01.22. 기준" 형식 (점으로 구분, 월/일이 0으로 패딩됨)
+            const dateMatch1 = title.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})\.\s*기준/);
+            if (dateMatch1) {
+                const year = dateMatch1[1];
+                const month = parseInt(dateMatch1[2], 10);
+                const day = parseInt(dateMatch1[3], 10);
+
+                // 요일 계산
+                const date = new Date(year, month - 1, day);
+                const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+                const weekday = weekdays[date.getDay()];
+
+                const formattedDate = `${year}. ${month}. ${day}. (${weekday}) 기준`;
+                console.log('Extracted and formatted date:', formattedDate);
+                return formattedDate;
+            }
+
+            // 패턴 2: 이미 포맷된 형식 "YYYY. M. DD. (요일) 기준"
+            const dateMatch2 = title.match(/(\d{4}\.\s*\d{1,2}\.\s*\d{1,2}\.\s*\([^\)]+\)\s*기준)/);
+            if (dateMatch2) {
+                console.log('Extracted date:', dateMatch2[1]);
+                return dateMatch2[1];
+            }
+        }
     } catch (error) {
         console.error("Error fetching sheet title:", error);
     }
 
     // 폴백: 상수 사용 (가장 안정적인 방법)
+    console.log('Using fallback date from DATA_AS_OF constant');
     return DATA_AS_OF;
 }
 

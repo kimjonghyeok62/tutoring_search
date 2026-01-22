@@ -235,6 +235,51 @@ function App() {
     return baseAddress;
   };
 
+  // 주소에 따라 지역명 배지를 반환하는 함수
+  const getLocationBadge = (address) => {
+    if (!address) return { text: '-', bgColor: 'rgba(156, 163, 175, 0.1)', textColor: '#6b7280' };
+    if (address.includes('경기도 광주시')) return { text: '광주', bgColor: 'rgba(16, 185, 129, 0.1)', textColor: '#059669' };
+    if (address.includes('경기도 하남시')) return { text: '하남', bgColor: 'rgba(59, 130, 246, 0.1)', textColor: '#2563eb' };
+    return { text: '-', bgColor: 'rgba(156, 163, 175, 0.1)', textColor: '#6b7280' };
+  };
+
+  // 주소에서 읍면동 또는 도로명+번 추출
+  const getLocationDetail = (address) => {
+    if (!address) return '';
+
+    // 1. 괄호 안의 읍면동 추출: (망월동), (오포읍), (감일동) 등
+    const dongMatch = address.match(/\(([^가-힣]*[읍면동가로길][^가-힣]*)\)/);
+    if (dongMatch) {
+      return dongMatch[1]; // 괄호 제외하고 반환
+    }
+
+    // 2. 도로명 + 번호 추출
+    // 먼저 쉼표 이전 부분만 추출
+    const beforeComma = address.split(',')[0].trim();
+
+    // 패턴 1: "도로명(한글+로/길) + 숫자 + 번길" 형태
+    // 예: "미사강변대로226번길" -> "미사강변대로 226"
+    // 예: "경종대로1461번길" -> "경종대로 1461"
+    const roadWithBeongilMatch = beforeComma.match(/([^경기도서울부산대구인천광주대전울산세종충북충남전북전남경북경남제주강원시군구읍면동리가 ]+[로길])(\d+)번길/);
+    if (roadWithBeongilMatch) {
+      return `${roadWithBeongilMatch[1]} ${roadWithBeongilMatch[2]}`;
+    }
+
+    // 패턴 2: "도로명(한글+로/길) + 공백 + 숫자" 형태
+    const roadWithSpaceMatch = beforeComma.match(/([^경기도서울부산대구인천광주대전울산세종충북충남전북전남경북경남제주강원시군구읍면동리가 ]+[로길])\s+(\d+)/);
+    if (roadWithSpaceMatch) {
+      return `${roadWithSpaceMatch[1]} ${roadWithSpaceMatch[2]}`;
+    }
+
+    // 패턴 3: "도 + 숫자 + 번길" 형태 (예: "도342번길")
+    const doRoadMatch = beforeComma.match(/(도\d+번길)/);
+    if (doRoadMatch) {
+      return doRoadMatch[1];
+    }
+
+    return '';
+  };
+
   // Render Login if not authenticated
   if (!isAuthenticated) {
     return <Login onLogin={handleLogin} />;
@@ -398,17 +443,17 @@ function App() {
                   onClick={() => selectSuggestion(academy)}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1 }}>
                       <span className="suggestion-name">{academy.name}</span>
                       <span style={{
                         fontSize: '0.75rem',
                         padding: '2px 6px',
                         borderRadius: '4px',
                         fontWeight: '600',
-                        backgroundColor: academy.status?.includes('개원') ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                        color: academy.status?.includes('개원') ? '#059669' : '#dc2626'
+                        backgroundColor: getLocationBadge(academy.address).bgColor,
+                        color: getLocationBadge(academy.address).textColor
                       }}>
-                        {academy.status || '-'}
+                        {getLocationBadge(academy.address).text}
                       </span>
                     </div>
                     <span className="suggestion-meta">{academy.founder.name}</span>
@@ -494,8 +539,15 @@ function App() {
               <div className="academy-meta">
                 <span style={{ color: 'var(--text-muted)' }}>교습자: <b style={{ color: 'var(--text-main)' }}>{academy.founder.name}</b></span>
                 <span style={{ color: 'var(--border-color)' }}>•</span>
-                <span className={academy.status.includes('개원') ? 'status-active' : 'status-inactive'}>
-                  {academy.status}
+                <span style={{
+                  fontSize: '0.8rem',
+                  padding: '3px 8px',
+                  borderRadius: '6px',
+                  fontWeight: '600',
+                  backgroundColor: getLocationBadge(academy.address).bgColor,
+                  color: getLocationBadge(academy.address).textColor
+                }}>
+                  {getLocationBadge(academy.address).text}
                 </span>
                 <span style={{ color: 'var(--border-color)' }}>•</span>
                 <button
@@ -536,7 +588,7 @@ function App() {
                     <polyline points="15 3 21 3 21 9"></polyline>
                     <line x1="10" y1="14" x2="21" y2="3"></line>
                   </svg>
-                  <span>플레이스</span>
+                  <span>네이버</span>
                 </button>
               </div>
             </div>
